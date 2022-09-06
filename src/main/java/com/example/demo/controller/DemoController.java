@@ -71,6 +71,7 @@ public class DemoController {
         int userId = CRUD.retrieveUserId(currentUserName);
         User_movie userMovie = CRUD.getUser_movieByID(Integer.parseInt(movie_id), userId);
         
+        System.out.println(userMovie);
         if(userMovie == null) {
              String json = jsonResponse.substring(0, jsonResponse.length()-1).concat(",\"favourite\": \"false\", \"personal_rating\":\"null\", \"notes\": \"null\"}");
         
@@ -153,51 +154,5 @@ public class DemoController {
 
 		return CRUD.inicializador(urlString);
 	}
-	
-
-	// General Functions
-//	public ResponseEntity<String> inicializador(String url){
-//		
-//		RestTemplate restTemplate = new RestTemplate();
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.setBearerAuth("eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YmY1YzQ0YzczMGY4ODBhYWZjNjYwMjAzODFlMjJkNyIsInN1YiI6IjYzMTVhZGU3NTUwN2U5MDA4MmIyZjFiOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.XI-AStf_R2eUyj8MWXcYpR2c6d-kdFQAq5ZkL6y8rrE");
-//		
-//		HttpEntity request = new HttpEntity(headers);
-//		ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET,request,String.class);
-//		return responseEntity;
-//	}
-//	
-//	
-//	public void insertRecord(User_movie user_movie,int id_movie) throws SQLException {
-//        // Step 1: Establishing a Connection
-//        try (Connection connection = H2JDBCUtils.getConnection();
-//            // Step 2:Create a statement using connection object
-//            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL)) {
-//            preparedStatement.setInt(1, user_movie.getUserid() );
-//            preparedStatement.setInt(2,id_movie);
-//            preparedStatement.setBoolean(3, user_movie.isFavourite());
-//            preparedStatement.setInt(4, user_movie.getPersonal_rating());
-//            preparedStatement.setString(5, user_movie.getNotes());
-//            // Step 3: Execute the query or update query
-//            preparedStatement.executeUpdate();
-//        } catch (SQLException e) {
-//
-//        }
-//
-//    }
-//	
-//	 public int retrieveUserId(String userName) throws SQLException {
-//	        String consulta = "select userid from users where username = '" + userName +"'";
-//	        try(Connection connection = H2JDBCUtils.getConnection();
-//	                Statement statement = connection.createStatement()){
-//	            
-//	            ResultSet rs = statement.executeQuery(consulta);
-//	            
-//	            if(rs.next()) {
-//	                return rs.getInt("userid");
-//	            }
-//	        return 0;
-//	        }
-//	    }
 
 }
