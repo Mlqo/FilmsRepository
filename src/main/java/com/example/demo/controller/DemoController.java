@@ -14,6 +14,7 @@ public class DemoController {
 	
 	// COLECTIVE
 	
+	
 	@GetMapping("/topRated")
 	public ResponseEntity<String> getTopRated(){
 		String url = "https://api.themoviedb.org/3/movie/top_rated?language=es-ES";
