@@ -2,12 +2,17 @@ package com.example.demo.controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,19 +85,29 @@ public class DemoController {
 	}
 	
 	
-	// Path
+	// Patch
 	@PatchMapping("/{movie_id}")
-    public ResponseEntity<String> postMovie(@PathVariable int movie_id, @RequestBody User_movie user_movie) {
+    public ResponseEntity<String> postMovie(@PathVariable int movie_id, @RequestBody User_movie user_movie) throws SQLException {
         String urlString="https://api.themoviedb.org/3/movie/"+movie_id+"?language=es-ES";    
+        //Recuperacion del nombre de usuario
+        String currentUserName = "";
         
-        
-        try {
-            insertRecord(user_movie,movie_id);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            //hay autenticacion
+            currentUserName = authentication.getName();
+            System.out.println(currentUserName);
+            int userId = retrieveUserId(currentUserName);
+            user_movie.setUserid(userId);
+            try {
+                insertRecord(user_movie,movie_id);
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-        return inicializador(urlString);
+      
+       return inicializador(urlString);
     }
 	
 	//	General Functions
@@ -104,27 +119,20 @@ public class DemoController {
 		
 		HttpEntity request = new HttpEntity(headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET,request,String.class);
-		
 		return responseEntity;
 	}
 	
 	
 	public void insertRecord(User_movie user_movie,int id_movie) throws SQLException {
-		
-        System.out.println(INSERT_USERS_SQL);
         // Step 1: Establishing a Connection
         try (Connection connection = H2JDBCUtils.getConnection();
             // Step 2:Create a statement using connection object
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL)) {
-            preparedStatement.setInt(1, 1 );
+            preparedStatement.setInt(1, user_movie.getUserid() );
             preparedStatement.setInt(2,id_movie);
             preparedStatement.setBoolean(3, user_movie.isFavourite());
             preparedStatement.setInt(4, user_movie.getPersonal_rating());
             preparedStatement.setString(5, user_movie.getNotes());
-
-
-
-           System.out.println(preparedStatement);
             // Step 3: Execute the query or update query
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -132,5 +140,19 @@ public class DemoController {
         }
 
     }
+	
+	 public int retrieveUserId(String userName) throws SQLException {
+	        String consulta = "select userid from users where username = '" + userName +"'";
+	        try(Connection connection = H2JDBCUtils.getConnection();
+	                Statement statement = connection.createStatement()){
+	            
+	            ResultSet rs = statement.executeQuery(consulta);
+	            
+	            if(rs.next()) {
+	                return rs.getInt("userid");
+	            }
+	        return 0;
+	        }
+	    }
 	
 }
