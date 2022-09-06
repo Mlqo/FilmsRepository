@@ -32,15 +32,22 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //				.httpBasic(Customizer.withDefaults());
 //	}
 	
-	 @Override
-     public void configure(HttpSecurity httpSecurity) throws Exception {
-         httpSecurity
-                 .authorizeRequests()
-                 .anyRequest()
-                 .authenticated()
-                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().csrf().disable()
-                 .httpBasic();
-     }
+	@Override
+    public void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .authorizeRequests()
+                .antMatchers("/h2-console/**").permitAll()
+                .and().csrf().ignoringAntMatchers("/h2-console/**")
+                .and().headers().frameOptions().sameOrigin()
+                .and().authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .csrf().disable()          
+                .httpBasic();
+    }
 	
 	
 
