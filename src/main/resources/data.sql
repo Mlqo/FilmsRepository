@@ -2,10 +2,12 @@ create table users(
     userid int not null auto_increment,
     username varchar_ignorecase(50) not null ,
     password varchar_ignorecase(500) not null,
+    role varchar(50) not null,
     enabled boolean not null,
-    rol varchar_ignorecase(50) not null ,
     primary key (userid)
 );
+
+
 
 
 
@@ -18,5 +20,14 @@ create table user_movie(
     foreign key (userid) references users(userid)
     );
 
-insert into users(username,password,rol,enabled) values ('user','user',1,"ADMIN");
-insert into users(username,password,rol,enabled) values ('admin','admin',1,"ADMIN");
+
+
+
+INSERT INTO `users` (`username`,`password`,`role`,`enabled`)
+VALUES ('user',
+'$2a$10$XptfskLsT1l/bRTLRiiCgejHqOpgXFreUnNUa35gJdCr2v2QbVFzu',
+'ROLE_USER', 1);
+INSERT INTO `users` (`username`,`password`,`role`,`enabled`)
+VALUES ('admin',
+'$2a$10$XptfskLsT1l/bRTLRiiCgejHqOpgXFreUnNUa35gJdCr2v2QbVFzu',
+'ROLE_ADMIN', 1);
